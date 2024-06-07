@@ -185,19 +185,37 @@ async function uploadImage() {
         feedback.textContent = 'Image deleted successfully'; // Example response
     }
 
-    function searchImages() {
-        const tag = document.getElementById('searchTagInput').value;
-        const results = document.getElementById('searchResults');
+    async function searchImages() {
+            const tagInput = document.getElementById('searchTagInput').value;
+            const results = document.getElementById('searchResults');
 
-        // Assuming this is a successful API call
-        // fetch(`/api/search?tag=${tag}`)
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         results.innerHTML = data.images.map(img => `<p>${img.name}: ${img.url}</p>`).join('');
-        //     });
+            const tags = tagInput.split(',').map(tag => tag.trim());
 
-        results.innerHTML = '<p>Example image: http://example.com/image.jpg</p>'; // Example response
-    }
+            const body = {
+                tags: tags
+            };
+
+            try {
+                const response = await fetch('https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/searchImageByTag', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('idToken')
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    results.innerHTML = data.links.map(url => `<p><img src="${url}" alt="Image"></p>`).join('');
+                } else {
+                    const errorData = await response.json();
+                    results.innerHTML = `<p>Error: ${errorData.error}</p>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
 
     function modifyTag() {
         const oldTag = document.getElementById('oldTagInput').value;

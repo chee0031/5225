@@ -83,6 +83,12 @@
     <input type="text" id="newTagInput" placeholder="New tag">
     <button onclick="modifyTag()">Modify</button>
     <div id="modifyFeedback" class="feedback"></div>
+	
+	<!-- Find Image by Thumbnail -->
+	<h2>Find Image by Thumbnail</h2>
+	<input type="text" id="thumbnailInput" placeholder="Enter thumbnail S3 URL">
+	<button onclick="findImage()">Find Full Image</button>
+	<div id="imageResult" class="image-info"></div>
 </div>
 
 <script>
@@ -237,6 +243,24 @@ async function uploadImage() {
 
         feedback.textContent = 'Tag modified successfully'; // Example response
     }
+	
+function findImage() {
+    const thumbnailUrl = document.getElementById('thumbnailInput').value;
+    const resultDisplay = document.getElementById('imageResult');
+
+    // Example API call
+    fetch(`https://your-api-endpoint/find?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`)
+        .then(response => response.json())
+        .then(data => {
+            resultDisplay.innerHTML = `<p>Full-size image URL: <a href="${data.fullImageUrl}" target="_blank">${data.fullImageUrl}</a></p>`;
+        })
+        .catch(error => {
+            resultDisplay.textContent = 'Failed to retrieve image.';
+        });
+
+    // Example response placeholder
+    resultDisplay.innerHTML = `<p>Full-size image URL: <a href="http://example.com/full-size.jpg" target="_blank">http://example.com/full-size.jpg</a></p>`;
+}
 </script>
 </body>
 </html>

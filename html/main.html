@@ -87,6 +87,8 @@
         <input type="text" id="searchTagInput" placeholder="Enter image tag">
         <button onclick="searchImages()">Search</button>
         <div id="searchResults" class="image-info"></div>
+        <div id="searchFeedback" class="feedback"></div>
+
 
         <!-- Modify Image Tag -->
         <h2>Modify Image Tag</h2>
@@ -227,15 +229,26 @@
         }
 
         async function searchImages() {
-            const tagInput = document.getElementById('searchTagInput').value;
+            const tagInput = document.getElementById('searchTagInput').value.trim();
             const results = document.getElementById('searchResults');
-
+            const feedback = document.getElementById('searchFeedback');
+            
+            // Clear previous feedback and results
+            feedback.textContent = '';
+            results.innerHTML = '';
+        
+            // Check if the input is empty
+            if (tagInput === '') {
+                feedback.textContent = 'Please enter a tag to search for images.';
+                return;
+            }
+        
             const tags = tagInput.split(',').map(tag => tag.trim());
-
+        
             const body = {
                 tags: tags
             };
-
+        
             try {
                 const response = await fetch('https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/searchImageByTag', {
                     method: 'POST',
@@ -245,18 +258,18 @@
                     },
                     body: JSON.stringify(body)
                 });
-
+        
+                const data = await response.json();
                 if (response.ok) {
-                    const data = await response.json();
                     results.innerHTML = data.links.map(url => `<p><img src="${url}" alt="Image"></p>`).join('');
                 } else {
-                    const errorData = await response.json();
-                    results.innerHTML = `<p>Error: ${errorData.error}</p>`;
+                    results.innerHTML = `<p>Error: ${data.error}</p>`;
                 }
             } catch (error) {
                 results.innerHTML = `<p>Error: ${error.message}</p>`;
             }
         }
+        
 
         function modifyTag() {
             const oldTag = document.getElementById('oldTagInput').value;

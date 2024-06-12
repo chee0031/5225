@@ -270,7 +270,7 @@
                 if (response.ok) {
                     results.innerHTML = data.links.map(url => `<p><img src="${url}" alt="Image"></p>`).join('');
                 } else {
-                    results.innerHTML = `<p>Error: ${data.error}</p>`;
+                    results.innerHTML = `<p>HTTP error! status: ${response.status}</p >`;
                 }
             } catch (error) {
                 results.innerHTML = `<p>Error: ${error.message}</p>`;

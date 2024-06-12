@@ -34,6 +34,16 @@
             max-width: 100%;
         }
 
+        .user-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: #0056b3;
+            margin: 20px 20px;
+            font-weight: bold;
+        }
+
         h1,
         h2 {
             color: #0056b3;
@@ -74,6 +84,9 @@
 </head>
 
 <body>
+
+    <div class="user-info" id="userInfo"></div>
+
     <div class="container">
         <h1>Image Management System</h1>
 
@@ -159,6 +172,25 @@
             }
             return hashParams;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = getHashParams();
+            if (params.id_token) {
+                const idToken = params.id_token;
+                localStorage.setItem('idToken', idToken);
+                const decodedToken = jwt_decode(idToken);
+                const username = decodedToken["cognito:username"];
+                localStorage.setItem('username', username);
+                document.getElementById('userInfo').textContent = `CurrentUser: ${username}`;
+            } else {
+                const username = localStorage.getItem('username');
+                if (username) {
+                    document.getElementById('userInfo').textContent = `CurrentUser: ${username}`;
+                }else {
+                    document.getElementById('userInfo').innerHTML = `Not logged in, click <a href="https://fit5225-g71-user-pool.auth.us-east-1.amazoncognito.com/login?client_id=57cav4j762pbltl8u39r2bn60g&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fhtml%2Fmain.html" style="color: #007bff; text-decoration: none;">here</a> to login.`;
+                }
+            }
+        });
 
         document.addEventListener("DOMContentLoaded", function () {
             // Get tokens from URL hash

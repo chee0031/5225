@@ -322,10 +322,16 @@
         const actionType = document.getElementById('actionType').value;
         const feedback = document.getElementById('modifyFeedback');
 
+        if (!url || !tag) {
+            feedback.textContent = 'URL and Tag are required.';
+            return;
+        }
+
         const requestBody = {
-            url: [url], 
+            url: [url],
             type: parseInt(actionType),
-            tags: [tag]
+            tags: [tag],
+            username: localStorage.getItem('username') // Add username to the request body
         };
 
         try {

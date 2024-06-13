@@ -288,9 +288,11 @@
             }
         
             const tags = tagInput.split(',').map(tag => tag.trim());
-        
+            const username = localStorage.getItem('username');
+
             const body = {
-                tags: tags
+                tags: tags,
+                username: username
             };
         
             try {
@@ -315,39 +317,46 @@
         }
         
 
-    async function modifyTag() {
-        const url = document.getElementById('urlInput').value;
-        const tag = document.getElementById('tagInput').value;
-        const actionType = document.getElementById('actionType').value;
-        const feedback = document.getElementById('modifyFeedback');
-
-        const requestBody = {
-            url: [url], 
-            type: parseInt(actionType),
-            tags: [tag]
-        };
-
-        try {
-            const response = await fetch('https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/changeTag', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('idToken')
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                feedback.textContent = data.message || 'Tag modified successfully';
-            } else {
-                const errorData = await response.json();
-                feedback.textContent = `Error: ${errorData.error}`;
+        async function modifyTag() {
+            const url = document.getElementById('urlInput').value;
+            const tag = document.getElementById('tagInput').value;
+            const actionType = document.getElementById('actionType').value;
+            const feedback = document.getElementById('modifyFeedback');
+        
+            if (!url || !tag) {
+                feedback.textContent = 'URL and Tag are required.';
+                return;
             }
-        } catch (error) {
-            feedback.textContent = `Error: ${error.message}`;
+        
+            const requestBody = {
+                url: [url],
+                type: parseInt(actionType),
+                tags: [tag],
+                username: localStorage.getItem('username') // Add username to the request body
+            };
+        
+            try {
+                const response = await fetch('https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/changeTag', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('idToken')
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    feedback.textContent = data.message || 'Tag modified successfully';
+                } else {
+                    const errorData = await response.json();
+                    feedback.textContent = `Error: ${errorData.error}`;
+                }
+            } catch (error) {
+                feedback.textContent = `Error: ${error.message}`;
+            }
         }
-    }
+        
 
     async function findImage() {
         const thumbnailUrl = document.getElementById('thumbnailInput').value;

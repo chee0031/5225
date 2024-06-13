@@ -244,7 +244,7 @@
             const feedback = document.getElementById('deleteFeedback');
 
             const body = {
-                username: file.name,
+                username: localStorage.getItem('username'),
                 key: tag
             };
 

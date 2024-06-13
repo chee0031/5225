@@ -348,23 +348,28 @@
         }
     }
 
-        function findImage() {
-            const thumbnailUrl = document.getElementById('thumbnailInput').value;
-            const resultDisplay = document.getElementById('imageResult');
+    async function findImage() {
+        const thumbnailUrl = document.getElementById('thumbnailInput').value;
+        const resultDisplay = document.getElementById('imageResult');
 
-            // Example API call
-            fetch(`https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/thumbnail?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`)
-                .then(response => response.json())
-                .then(data => {
-                    resultDisplay.innerHTML = `<p>Full-size image URL: <a href="${data.fullImageUrl}" target="_blank">${data.fullImageUrl}</a></p>`;
-                })
-                .catch(error => {
-                    resultDisplay.textContent = 'Failed to retrieve image.';
-                });
+        try {
+            const response = await fetch(`https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/thumbnail?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('idToken')
+                }
+            });
 
-            // Example response placeholder
-            resultDisplay.innerHTML = `<p>Full-size image URL: <a href="http://example.com/full-size.jpg" target="_blank">http://example.com/full-size.jpg</a></p>`;
-        }
+            if (response.ok) {
+                const data = await response.json();
+                resultDisplay.innerHTML = `<p>Full-size image URL: <a href="${data.fullImageUrl}" target="_blank">${data.fullImageUrl}</a></p>`;
+            } else {
+                const errorData = await response.json();
+                resultDisplay.innerHTML = `<p>Error: ${errorData.error}</p>`;
+            }
+        } catch (error) {
+            resultDisplay.innerHTML = `<p>Error: ${error.message}</p>`;
+    }
+}
     </script>
 </body>
 

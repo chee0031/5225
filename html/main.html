@@ -112,8 +112,12 @@
 
         <!-- Modify Image Tag -->
         <h2>Modify Image Tag</h2>
-        <input type="text" id="oldTagInput" placeholder="Old tag">
-        <input type="text" id="newTagInput" placeholder="New tag">
+        <input type="text" id="urlInput" placeholder="Enter image URL">
+        <input type="text" id="tagInput" placeholder="Enter tag">
+        <select id="actionType">
+            <option value="1">Add Tag</option>
+            <option value="0">Remove Tag</option>
+        </select>
         <button onclick="modifyTag()">Modify</button>
         <div id="modifyFeedback" class="feedback"></div>
 
@@ -310,26 +314,39 @@
         }
         
 
-        function modifyTag() {
-            const oldTag = document.getElementById('oldTagInput').value;
-            const newTag = document.getElementById('newTagInput').value;
-            const feedback = document.getElementById('modifyFeedback');
+    async function modifyTag() {
+        const url = document.getElementById('urlInput').value;
+        const tag = document.getElementById('tagInput').value;
+        const actionType = document.getElementById('actionType').value;
+        const feedback = document.getElementById('modifyFeedback');
 
-            // Assuming this is a successful API call
-            // fetch('/api/modify-tag', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ oldTag, newTag })
-            // })
-            //     .then(response => response.json())
-            //     .then(data => {
-            //         if (data.success) {
-            //             feedback.textContent = 'Tag modified successfully';
-            //         }
-            //     });
+        const requestBody = {
+            url: [url], 
+            type: parseInt(actionType),
+            tags: [tag]
+        };
 
-            feedback.textContent = 'Tag modified successfully'; // Example response
+        try {
+            const response = await fetch('https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/changeTag', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('idToken')
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                feedback.textContent = data.message || 'Tag modified successfully';
+            } else {
+                const errorData = await response.json();
+                feedback.textContent = `Error: ${errorData.error}`;
+            }
+        } catch (error) {
+            feedback.textContent = `Error: ${error.message}`;
         }
+    }
 
         function findImage() {
             const thumbnailUrl = document.getElementById('thumbnailInput').value;

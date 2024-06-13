@@ -287,9 +287,11 @@
             }
         
             const tags = tagInput.split(',').map(tag => tag.trim());
-        
+            const username = localStorage.getItem('username');
+
             const body = {
-                tags: tags
+                tags: tags,
+                username: username
             };
         
             try {

@@ -353,7 +353,7 @@
             const resultDisplay = document.getElementById('imageResult');
 
             // Example API call
-            fetch(`https://your-api-endpoint/find?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`)
+            fetch(`https://q44vjrcm73.execute-api.us-east-1.amazonaws.com/prod/thumbnail?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`)
                 .then(response => response.json())
                 .then(data => {
                     resultDisplay.innerHTML = `<p>Full-size image URL: <a href="${data.fullImageUrl}" target="_blank">${data.fullImageUrl}</a></p>`;
